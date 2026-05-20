@@ -1,0 +1,37 @@
+node_modules/
+dist/
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+service-account*.json
+firebase credentials
+*.pem
+*.key
+*.p12
+
+# Runtime server state. Firestore is the production storage path.
+server/data/*.json
+server/data/*.tmp
+server/data/*.lock
+
+# Logs and local caches
+*.log
+vite-*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vite/
+.cache/
+
+# Host/provider local folders
+.vercel/
+.netlify/
+.firebase/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

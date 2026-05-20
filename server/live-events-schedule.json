@@ -1,0 +1,112 @@
+{
+  "events": [
+    {
+      "eventId": "official-daily-neon-pulse-2026",
+      "type": "daily",
+      "title": "Official Daily: Neon Pulse",
+      "shortTitle": "Daily",
+      "description": "Backend scheduled daily event. Finish top three on the rotating neon sprint.",
+      "startAt": "2026-01-01T00:00:00.000Z",
+      "endAt": "2027-01-01T00:00:00.000Z",
+      "requiredEdition": "STANDALONE_EARLY_ACCESS",
+      "trackId": "night-circuit",
+      "shipId": "starling",
+      "lapCount": 3,
+      "aiCount": 4,
+      "difficulty": "standard",
+      "modifiers": {
+        "hazardsEnabled": true,
+        "pickupsEnabled": true,
+        "powerupsEnabled": true,
+        "boostPadDensity": "normal",
+        "shortcutDifficulty": "normal",
+        "visualEffect": "default"
+      },
+      "goal": {
+        "id": "top-three",
+        "label": "Finish Top 3",
+        "description": "Place third or better in the official daily event."
+      },
+      "reward": {
+        "rewardId": "event-daily-challenge",
+        "title": "Daily Challenge Badge",
+        "description": "Daily challenge badge progress."
+      },
+      "rewardId": "event-daily-challenge",
+      "rewardPreview": "Daily challenge badge progress",
+      "leaderboardEnabled": true
+    },
+    {
+      "eventId": "official-weekly-rift-chase-2026",
+      "type": "weekly",
+      "title": "Official Weekly: Rift Chase",
+      "shortTitle": "Weekly",
+      "description": "Backend scheduled weekly event with a tougher podium target.",
+      "startAt": "2026-01-01T00:00:00.000Z",
+      "endAt": "2027-01-01T00:00:00.000Z",
+      "requiredEdition": "STANDALONE_FULL_PREMIUM",
+      "trackId": "rift-run",
+      "shipId": "nova",
+      "lapCount": 4,
+      "aiCount": 6,
+      "difficulty": "elite",
+      "modifiers": {
+        "hazardsEnabled": true,
+        "pickupsEnabled": true,
+        "powerupsEnabled": true,
+        "boostPadDensity": "dense",
+        "shortcutDifficulty": "risky",
+        "visualEffect": "storm"
+      },
+      "goal": {
+        "id": "weekly-podium",
+        "label": "Finish Top 2",
+        "description": "Finish second or better in the official weekly event."
+      },
+      "reward": {
+        "rewardId": "event-weekly-champion",
+        "title": "Weekly Event Trophy",
+        "description": "Weekly event trophy entry."
+      },
+      "rewardId": "event-weekly-champion",
+      "rewardPreview": "Weekly event trophy",
+      "leaderboardEnabled": true
+    },
+    {
+      "eventId": "official-weekend-championship-preview-2026",
+      "type": "weekend",
+      "title": "Official Weekend Championship Preview",
+      "shortTitle": "Weekend",
+      "description": "Backend scheduled weekend-style championship preview. No prizes, just standings and rewards.",
+      "startAt": "2026-01-01T00:00:00.000Z",
+      "endAt": "2027-01-01T00:00:00.000Z",
+      "requiredEdition": "STANDALONE_FULL_PREMIUM",
+      "trackId": "solar-storm-corridor",
+      "shipId": "solstice",
+      "lapCount": 3,
+      "aiCount": 7,
+      "difficulty": "elite",
+      "modifiers": {
+        "hazardsEnabled": true,
+        "pickupsEnabled": true,
+        "powerupsEnabled": true,
+        "boostPadDensity": "normal",
+        "shortcutDifficulty": "normal",
+        "visualEffect": "aurora"
+      },
+      "goal": {
+        "id": "weekend-win",
+        "label": "Win Weekend Preview",
+        "description": "Win the official weekend championship preview."
+      },
+      "reward": {
+        "rewardId": "event-weekend-preview",
+        "title": "Weekend Championship Badge",
+        "description": "Weekend championship badge."
+      },
+      "rewardId": "event-weekend-preview",
+      "rewardPreview": "Weekend championship badge",
+      "leaderboardEnabled": true
+    }
+  ]
+}
