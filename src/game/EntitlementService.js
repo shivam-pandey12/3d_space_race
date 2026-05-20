@@ -105,6 +105,7 @@ export class EntitlementService {
   }
 
   setAccountContext(accountContext = null) {
+    const previousUid = this.accountContext?.uid ?? '';
     this.accountContext = accountContext
       ? {
           uid: String(accountContext.uid ?? accountContext.authUid ?? ''),
@@ -114,6 +115,13 @@ export class EntitlementService {
           isAnonymous: Boolean(accountContext.isAnonymous ?? accountContext.auth?.isAnonymous)
         }
       : null;
+
+    const nextUid = this.accountContext?.uid ?? '';
+
+    if (previousUid && previousUid !== nextUid) {
+      this.backendEntitlement = null;
+      this.backendEntitlementError = '';
+    }
   }
 
   isDemoOverrideEnabled() {
@@ -666,7 +674,10 @@ export class EntitlementService {
     const payload = await response.json().catch(() => ({}));
 
     if (!response.ok || payload.ok === false) {
-      throw new Error(payload.message || `Backend request failed (${response.status}).`);
+      const error = new Error(payload.message || `Backend request failed (${response.status}).`);
+      error.status = response.status;
+      error.payload = payload;
+      throw error;
     }
 
     return payload;
@@ -699,6 +710,13 @@ export class EntitlementService {
         message: 'Backend entitlement refreshed.'
       };
     } catch (error) {
+      if (error?.payload?.payment) {
+        this.backendPaymentStatus = {
+          ...this.backendPaymentStatus,
+          ...error.payload.payment
+        };
+      }
+
       if (!import.meta.env.DEV && !this.isDemoOverrideEnabled()) {
         this.backendEntitlement = null;
       }
@@ -766,6 +784,21 @@ export class EntitlementService {
         planId: normalizedPlanId,
         plan,
         message: purchaseAccess.reason
+      };
+    }
+
+    if (!authToken && !import.meta.env.DEV) {
+      const message = 'Sign in with Google to purchase and keep your premium access.';
+      this.purchaseState = {
+        status: 'blocked',
+        message
+      };
+      return {
+        ok: false,
+        status: 'blocked',
+        planId: normalizedPlanId,
+        plan,
+        message
       };
     }
 
@@ -843,6 +876,13 @@ export class EntitlementService {
         message: this.purchaseState.message
       };
     } catch (error) {
+      if (error?.payload?.payment) {
+        this.backendPaymentStatus = {
+          ...this.backendPaymentStatus,
+          ...error.payload.payment
+        };
+      }
+
       const message = error?.message ?? 'Payment could not be completed.';
       this.purchaseState = {
         status: 'error',

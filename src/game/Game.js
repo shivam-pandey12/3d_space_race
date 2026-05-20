@@ -1556,6 +1556,12 @@ export class Game {
       return;
     }
 
+    const authState = this.identityService.currentAuth;
+
+    if (!authState || authState.isAnonymous || authState.provider !== 'google') {
+      return;
+    }
+
     void this.identityService.getMultiplayerAuthPayload(true)
       .then((authPayload) => this.entitlements.refreshBackendEntitlement(authPayload.authToken ?? ''))
       .then(() => {

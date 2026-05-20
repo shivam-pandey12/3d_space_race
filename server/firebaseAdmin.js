@@ -15,17 +15,7 @@ function parseJson(value) {
 }
 
 function readServiceAccount() {
-  const inlineJson = parseJson(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
-
-  if (inlineJson) {
-    return inlineJson;
-  }
-
-  const base64Json = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64
-    ? Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf8')
-    : '';
-
-  return parseJson(base64Json);
+  return parseJson(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
 }
 
 let cachedAdminAuth = null;

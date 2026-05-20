@@ -83,13 +83,13 @@ ENABLE_LEGACY_PASS_MIGRATION=false
 Firebase Admin:
 
 ```bash
-FIREBASE_SERVICE_ACCOUNT_BASE64=base64_encoded_service_account_json
+FIREBASE_SERVICE_ACCOUNT_JSON='{"type":"service_account","project_id":"your-project-id","private_key":"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n","client_email":"firebase-adminsdk-xxx@your-project-id.iam.gserviceaccount.com"}'
 FIREBASE_PROJECT_ID=your-project-id
 GOOGLE_CLOUD_PROJECT=your-project-id
 GCLOUD_PROJECT=your-project-id
 ```
 
-Alternatively use `GOOGLE_APPLICATION_CREDENTIALS=/absolute/path/to/service-account.json` on hosts that support mounted secret files.
+Alternatively use `GOOGLE_APPLICATION_CREDENTIALS=/absolute/path/to/service-account.json` on hosts that support mounted secret files. Do not use base64 service-account env for this project.
 
 Feature flags:
 

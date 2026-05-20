@@ -1573,6 +1573,30 @@ async function maybeFinalizeRoom(io, room) {
 }
 
 const app = express();
+app.use((request, response, next) => {
+  const origin = request.headers.origin;
+  const allowOrigin = !origin
+    ? ''
+    : MULTIPLAYER_ALLOWED_ORIGINS.includes(origin) || (!IS_PRODUCTION && MULTIPLAYER_ALLOWED_ORIGINS.length === 0)
+      ? origin
+      : '';
+
+  response.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+
+  if (allowOrigin) {
+    response.setHeader('Access-Control-Allow-Origin', allowOrigin);
+    response.setHeader('Vary', 'Origin');
+    response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-dev-user-id, x-dev-provider, x-dev-email');
+    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  }
+
+  if (request.method === 'OPTIONS') {
+    response.status(204).end();
+    return;
+  }
+
+  next();
+});
 const paymentRuntime = installPaymentRoutes(app, {
   stateFile: PAYMENT_STATE_FILE,
   firebaseAdminStatus,

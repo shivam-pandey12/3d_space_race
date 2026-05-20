@@ -41,6 +41,19 @@ function getPaymentSetup({ production }) {
     ['RAZORPAY_WEBHOOK_SECRET', webhookSecret]
   ].filter(([, value]) => !value).map(([key]) => key);
   const ready = enablePayments && enableBackendEntitlements && missingSecrets.length === 0;
+  const setupIssues = [];
+
+  if (!enablePayments) {
+    setupIssues.push('ENABLE_PAYMENTS is not true');
+  }
+
+  if (!enableBackendEntitlements) {
+    setupIssues.push('ENABLE_BACKEND_ENTITLEMENTS is not true');
+  }
+
+  if (missingSecrets.length > 0) {
+    setupIssues.push(`missing ${missingSecrets.join(', ')}`);
+  }
 
   return {
     enablePayments,
@@ -53,8 +66,8 @@ function getPaymentSetup({ production }) {
     missingSecrets,
     ready,
     production,
-    setupError: production && enablePayments && missingSecrets.length > 0
-      ? `Payment setup error: missing ${missingSecrets.join(', ')}. Razorpay endpoints will fail safely.`
+    setupError: setupIssues.length > 0 && (production || enablePayments || enableBackendEntitlements)
+      ? `Payment setup error: ${setupIssues.join('; ')}. Razorpay endpoints will fail safely.`
       : ''
   };
 }
@@ -66,7 +79,7 @@ function safePaymentStatus(setup) {
     ready: setup.ready,
     environment: setup.paymentEnv,
     missingPublicSetup: setup.missingSecrets.includes('RAZORPAY_KEY_ID'),
-    setupError: setup.setupError ? 'Payment provider is not fully configured.' : ''
+    setupError: setup.setupError || ''
   };
 }
 
@@ -552,10 +565,12 @@ export function installPaymentRoutes(app, {
     }
 
     if (!auth.ok) {
-      response.status(auth.status).json({
-        ok: false,
+      const isIdentityMissing = auth.status === 401;
+      response.status(isIdentityMissing ? 200 : auth.status).json({
+        ok: isIdentityMissing,
         entitlement: publicEntitlement(null),
         message: auth.message,
+        requiresSignIn: isIdentityMissing,
         payment: safePaymentStatus(setup)
       });
       return;
