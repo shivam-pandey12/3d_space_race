@@ -1,3 +1,5 @@
+import { LEGAL_LINKS } from './legalContent.js';
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -161,6 +163,7 @@ export class MetaUI {
         <div class="meta-ui__page-shell">
           ${this.renderHangarPage(model)}
         </div>
+        ${this.renderLegalLinks('footer')}
       </div>
     `;
 
@@ -202,6 +205,43 @@ export class MetaUI {
             ${page.badge ? `<small class="meta-ui__nav-badge">${escapeHtml(page.badge)}</small>` : ''}
           </button>
         `).join('')}
+      </div>
+    `;
+  }
+
+  renderLegalLinks(mode = 'inline') {
+    const legalLinks = LEGAL_LINKS.map((link) => `
+      <a class="meta-ui__legal-link" href="${escapeHtml(link.route)}">${escapeHtml(link.label)}</a>
+    `).join('');
+
+    return `
+      <div class="meta-ui__legal-strip meta-ui__legal-strip--${escapeHtml(mode)}">
+        <span>Legal and support</span>
+        <div class="meta-ui__legal-links">
+          ${legalLinks}
+        </div>
+      </div>
+    `;
+  }
+
+  renderPurchaseLegalNotice() {
+    const linkByRoute = Object.fromEntries(LEGAL_LINKS.map((link) => [link.route, link]));
+    const legalAnchor = (route) => {
+      const link = linkByRoute[route];
+      return `<a class="meta-ui__legal-link" href="${escapeHtml(link.route)}">${escapeHtml(link.label)}</a>`;
+    };
+
+    return `
+      <div class="meta-ui__purchase-legal">
+        <strong>By purchasing, you agree to the Terms & Conditions, Privacy Policy, and Refund Policy.</strong>
+        <span>Premium passes are fixed-duration 120-day digital access passes. They do not auto-renew and are granted only after backend payment verification.</span>
+        <div class="meta-ui__legal-links">
+          ${legalAnchor('/terms-and-conditions')}
+          ${legalAnchor('/privacy-policy')}
+          ${legalAnchor('/refund-and-cancellation-policy')}
+          ${legalAnchor('/shipping-policy')}
+          ${legalAnchor('/contact')}
+        </div>
       </div>
     `;
   }
@@ -802,6 +842,14 @@ export class MetaUI {
             ${this.renderLitePlanCard(premium)}
             ${premium.plans.map((plan) => this.renderPlanCard(plan)).join('')}
           </div>
+        </section>
+
+        <section class="meta-ui__section meta-ui__section--wide">
+          <div class="meta-ui__section-head">
+            <h2>Checkout Terms</h2>
+            <span>Digital access pass. No auto-renewal.</span>
+          </div>
+          ${this.renderPurchaseLegalNotice()}
         </section>
 
         <section class="meta-ui__section meta-ui__section--wide">
