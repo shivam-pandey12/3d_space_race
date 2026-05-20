@@ -4,18 +4,30 @@ import { getFirestore } from 'firebase-admin/firestore';
 
 function parseJson(value) {
   if (!value) {
-    return null;
+    return { value: null, error: '' };
   }
 
   try {
-    return JSON.parse(value);
-  } catch {
-    return null;
+    return { value: JSON.parse(value), error: '' };
+  } catch (error) {
+    return {
+      value: null,
+      error: `FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON: ${error?.message ?? 'parse failed'}`
+    };
   }
 }
 
 function readServiceAccount() {
   return parseJson(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+}
+
+function hasApplicationDefaultCredentials() {
+  return Boolean(
+    process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+    process.env.K_SERVICE ||
+    process.env.GOOGLE_CLOUD_PROJECT ||
+    process.env.GCLOUD_PROJECT
+  );
 }
 
 let cachedAdminAuth = null;
@@ -33,12 +45,27 @@ export function initializeFirebaseAdmin() {
   }
 
   try {
-    const serviceAccount = readServiceAccount();
+    const serviceAccountResult = readServiceAccount();
+    const serviceAccount = serviceAccountResult.value;
+
+    if (serviceAccountResult.error) {
+      throw new Error(serviceAccountResult.error);
+    }
+
     const projectId = process.env.FIREBASE_PROJECT_ID
       || process.env.GOOGLE_CLOUD_PROJECT
       || process.env.GCLOUD_PROJECT
       || serviceAccount?.project_id
       || '';
+    const useApplicationDefault = !serviceAccount && hasApplicationDefaultCredentials();
+
+    if (!serviceAccount && !useApplicationDefault) {
+      throw new Error('Firebase Admin credentials are not configured. Set FIREBASE_SERVICE_ACCOUNT_JSON to the full service account JSON on the backend host.');
+    }
+
+    if (!projectId) {
+      throw new Error('Firebase project id is not configured. Set FIREBASE_PROJECT_ID to your Firebase project id.');
+    }
 
     const existingApp = getApps()[0];
     const app = existingApp ?? initializeApp(serviceAccount
@@ -48,7 +75,7 @@ export function initializeFirebaseAdmin() {
         }
       : {
           credential: applicationDefault(),
-          projectId: projectId || undefined
+          projectId
         });
 
     cachedAdminAuth = getAuth(app);
